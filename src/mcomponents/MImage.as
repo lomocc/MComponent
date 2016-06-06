@@ -1,39 +1,52 @@
 ﻿package mcomponents
 {
 	import flash.display.Sprite;
-
+	import flash.net.URLRequest;
+	
 	dynamic public class MImage extends MComponent
 	{
+		private var _mask:Sprite = new Sprite();
 		public function MImage()
 		{
 			super();
-			
-			this.addChild(this.spt);
+		}
+		override protected function createChildren():void
+		{
+			this.addChild(this._mask);
+			super.createChildren();
+		}
+		
+		protected var _url:String = "images/content.png";
+		[Inspectable(type="String", defaultValue="images/content.png", name="url（图片地址）")]
+		public function get url():String {
+			return _url;
+		}
+		
+		public function set url(value:String):void {
+			_url = value;
+			this.invalidate();
 			
 		}
 		
-		public var spt:Sprite = new Sprite();
-		protected var bgColor:uint;
-		public var xxxx:Number=0;
-		[Inspectable(type="Color",defaultValue="#0000ff")]
-		public function get backGroundColor():uint {
-			return bgColor;
+		protected function updateMask():void
+		{
+			trace("updateMask Image",startWidth, startHeight);
+			this._mask.graphics.clear();
+			this._mask.graphics.beginFill(0xf8f8f8);
+			this._mask.graphics.drawRect(0,0, startWidth, startHeight);
+			this._mask.graphics.endFill();
 		}
-		
-		public function set backGroundColor(value:uint):void {
-			bgColor=value;
-			
-			this.spt.graphics.clear();
-			this.spt.graphics.beginFill(bgColor);
-			this.spt.graphics.drawRect(0,0,100,100);
-			this.spt.graphics.endFill();
-		}
-		override public function get x():Number {
-			return super.x;
-		}
-		override public function set x(value:Number):void {
-			this.xxxx = value;
-			super.x = value;
+		override protected function render():void {
+			trace("render", this.url);
+			if(this.url){
+				trace("load", true, this.url);
+				this.loader.load(new URLRequest(this.url));
+				this.loader.mask = this._mask;
+			}else{
+				trace("load", false);
+				this.loader.mask = null;
+			}
+			this.updateMask();
 		}
 	}
 }

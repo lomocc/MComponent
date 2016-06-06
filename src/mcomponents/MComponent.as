@@ -1,93 +1,98 @@
 package mcomponents
 {
+	import flash.display.Loader;
 	import flash.display.MovieClip;
+	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.utils.Dictionary;
 	
 	public class MComponent extends MovieClip
 	{
-		public static var inCallLaterPhase:Boolean=false;
+		protected var container:Sprite;
+		protected var loader:Loader = new Loader();
+		protected var startWidth:Number;
+		protected var startHeight:Number;
 		
 		public function MComponent()
 		{
 			super();
-			configUI();
-		}
-		protected var startWidth:Number;
-		protected var startHeight:Number;
-		
-		protected function configUI():void {	
-			var r:Number = this.rotation;
-//			this.rotation = 0;
-			var w:Number = super.width;
-			var h:Number = super.height;
-//			super.scaleX = super.scaleY = 1;
-			setSize(w,h);
-//			this.rotation = r;
-			startWidth = w;
-			startHeight = h;
+			
+			startWidth = this.width/this.scaleX;
+			startHeight = this.height/this.scaleY;
+			
 			if (numChildren > 0) {
 				removeChildAt(0);
 			}
+			
+			this.createChildren();
+			this.invalidate();
 		}
-		protected var _width:Number;
-		
-		protected var _height:Number;
-		
-		override public function get scaleX():Number {
-			return width / startWidth;
-		}
-		
-		override public function set scaleX(value:Number):void {
-			setSize(startWidth*value, height);
-		}
-		
-		override public function get scaleY():Number {
-			return height / startHeight;
+		protected function createChildren():void
+		{
+			this.container = new Sprite();
+			this.container.addChild(this.loader);
+			this.addChild(this.container);
+			
+			this.loader.contentLoaderInfo.addEventListener(Event.INIT, this.onLoaderInit);
 		}
 		
-		override public function set scaleY(value:Number):void {
-			setSize(width, startHeight*value);
+		protected function onLoaderInit(event:Event):void{
+			this.container.x = (this.startWidth - this.loader.width)/2;
+			this.container.y = (this.startHeight - this.loader.height)/2;
+		}
+		[Inspectable(type="Number", defaultValue="0", name="x（横坐标）")]
+		public function get contentX():Number { 
+			return this.loader.x;
+		}
+		public function set contentX(value:Number):void {
+			this.loader.x = value;
+		}
+		[Inspectable(type="Number", defaultValue="0", name="y（纵坐标）")]
+		public function get contentY():Number {
+			return this.loader.y;
+		}
+		public function set contentY(value:Number):void {
+			this.loader.y = value;
+		}
+		[Inspectable(type="Number", defaultValue="1", name="scale（缩放）")]
+		public function get scale():Number {
+			return this.loader.scaleX;
 		}
 		
-		override public function get width():Number { return _width; }
-		
-		override public function set width(value:Number):void {
-			if (_width == value) { return; }
-			setSize(value, height);
+		public function set scale(value:Number):void {
+			this.loader.scaleX = value;
+			this.loader.scaleY = value;
 		}
 		
-		override public function get height():Number { return _height; }
-		
-		override public function set height(value:Number):void {
-			if (_height == value) { return; }
-			setSize(width, value);
-		}
-		public function setSize(width:Number, height:Number):void {
-			_width = width;
-			_height = height;
-			invalidate();
-		}
-		protected var invalidFlag:Boolean = false;
-		public function invalidate(callLater:Boolean=true):void {
+		//		public function get contentWidth():Number { 
+		//			return this.loader.width;
+		//		}
+		//		public function get contentHeight():Number {
+		//			return this.loader.height; 
+		//		}
+		/////////////////////////////////////////////////////////////////////////////////////
+		// helper
+		/////////////////////////////////////////////////////////////////////////////////////
+		private var invalidFlag:Boolean = false;
+		protected function invalidate(callLater:Boolean=true):void {
 			invalidFlag = true;
 			if (callLater) { 
-				this.callLater(doValidate); 
+				this.callLater(doRender); 
 			}else{
-				doValidate();
+				doRender();
 				
 			}
 		}
-		protected function validate():void {
+		private function doRender():void {
+			this.render();
+			invalidFlag = false;
+		}
+		protected function render():void {
 			
 		}
 		
-		protected function doValidate():void {
-			this.validate();
-			invalidFlag = false;
-		}
-		
-		protected var callLaterMethods:Dictionary = new Dictionary();
+		private static var inCallLaterPhase:Boolean=false;
+		private var callLaterMethods:Dictionary = new Dictionary();
 		protected function callLater(fn:Function):void {
 			if (inCallLaterPhase) { return; }
 			
