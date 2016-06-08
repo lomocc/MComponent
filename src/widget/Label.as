@@ -1,14 +1,14 @@
-﻿package mcomponents
+﻿package widget
 {
 	import flash.display.Sprite;
 	import flash.net.URLRequest;
 	
-	public class MLabel extends MComponent
+	public class Label extends Component
 	{
 		private var serverURL:String = "images/font.swf";
 		private var _mask:Sprite = new Sprite();
 		
-		public function MLabel()
+		public function Label()
 		{
 			super();
 		}

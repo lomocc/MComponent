@@ -1,4 +1,4 @@
-package mcomponents
+package widget
 {
 	import flash.display.Loader;
 	import flash.display.MovieClip;
@@ -6,14 +6,14 @@ package mcomponents
 	import flash.events.Event;
 	import flash.utils.Dictionary;
 	
-	public class MComponent extends MovieClip
+	public class Component extends MovieClip
 	{
 		protected var container:Sprite;
 		protected var loader:Loader = new Loader();
 		protected var startWidth:Number;
 		protected var startHeight:Number;
 		
-		public function MComponent()
+		public function Component()
 		{
 			super();
 			

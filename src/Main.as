@@ -31,11 +31,14 @@ package
 		private var mComponentMap:Dictionary = new Dictionary();
 		
 		private var mapConfig:Array = [
-			{frame:2, type:"MImage"},
-			{frame:2, type:"MLabel"},
-			{frame:2, type:"MImage"},
-			{frame:2, type:"MImage"},
-			{frame:122, type:"MImage"}];
+			{"frame":2,"type":"widget.MImage"},
+			{"frame":2,"type":"widget.MLabel"},
+			{"frame":2,"type":"widget.MImage"},
+			{"frame":2,"type":"widget.MLabel"},
+			{"frame":2,"type":"widget.MImage"},
+			{"frame":122,"type":"widget.MImage"},
+			{"frame":1143,"type":"widget.MLabel"},
+			{"frame":1403,"type":"widget.MLabel"}];
 		
 		public function Main()
 		{
@@ -125,31 +128,9 @@ package
 		{
 			var movie:MovieClip = LoaderInfo(event.target).content as MovieClip;
 			movie.stop();
-//			movie.addEventListener(Event.ENTER_FRAME, onMovieEnterFrame);
+			//			movie.addEventListener(Event.ENTER_FRAME, onMovieEnterFrame);
 			trace("onMovieLoadInit", movie.totalFrames);
 		}
-		
-//		protected function onMovieEnterFrame(event:Event):void
-//		{
-//			loop(event.currentTarget as DisplayObject);
-//			
-//		}
-//		
-//		public function loop(node:DisplayObject):void{
-//			if(node is DisplayObjectContainer){
-//				for(var i:int = (node as DisplayObjectContainer).numChildren-1;i>=0;i--)
-//				{
-//					loop((node as DisplayObjectContainer).getChildAt(i));
-//				}
-//			}
-//			var clazzName:String = getQualifiedClassName(node);
-//			if(/mcomponents/.test(clazzName)){
-//				if(!mComponentMap[node]){
-//					mComponentMap[node] = true;
-//					trace(this.currentFrame, node);
-//				}
-//			}
-//		}
 		
 		private function updateTimeStamp():void
 		{
@@ -165,7 +146,6 @@ package
 			}else{
 				movie.stop();
 			}
-			trace("toggle", event.target.toggled);
 		}
 		
 		protected function onBtnClick(event:MouseEvent):void
@@ -173,5 +153,6 @@ package
 			trace("click");
 			
 		}
+		
 	}
 }

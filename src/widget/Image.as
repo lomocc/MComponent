@@ -1,12 +1,12 @@
-﻿package mcomponents
+﻿package widget
 {
 	import flash.display.Sprite;
 	import flash.net.URLRequest;
 	
-	dynamic public class MImage extends MComponent
+	dynamic public class Image extends Component
 	{
 		private var _mask:Sprite = new Sprite();
-		public function MImage()
+		public function Image()
 		{
 			super();
 		}
@@ -30,20 +30,16 @@
 		
 		protected function updateMask():void
 		{
-			trace("updateMask Image",startWidth, startHeight);
 			this._mask.graphics.clear();
 			this._mask.graphics.beginFill(0xf8f8f8);
 			this._mask.graphics.drawRect(0,0, startWidth, startHeight);
 			this._mask.graphics.endFill();
 		}
 		override protected function render():void {
-			trace("render", this.url);
 			if(this.url){
-				trace("load", true, this.url);
 				this.loader.load(new URLRequest(this.url));
 				this.loader.mask = this._mask;
 			}else{
-				trace("load", false);
 				this.loader.mask = null;
 			}
 			this.updateMask();
