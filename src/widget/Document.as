@@ -62,7 +62,7 @@
 				
 			}
 			var clazzName:String = getQualifiedClassName(node);
-			if(/^mcomponents/.test(clazzName)){
+			if(/^widget/.test(clazzName)){
 				if(!mComponentMap[node]){
 					mComponentMap[node] = true;
 					

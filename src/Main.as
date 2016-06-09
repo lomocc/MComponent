@@ -10,14 +10,17 @@ package
 	import flash.events.MouseEvent;
 	import flash.net.URLRequest;
 	import flash.text.TextField;
+	import flash.text.TextFormat;
 	import flash.utils.Dictionary;
 	
+	import component.MovieClipWrapper;
 	import component.PlayButton;
 	import component.base.Button;
 	
 	[SWF(width="1024", height="768")]
 	public class Main extends Sprite
 	{
+		public var frameRate:uint = 24;
 		private var componentList:Sprite;
 		
 		private var playBtn:PlayButton;
@@ -27,21 +30,18 @@ package
 		private var toolContainer:Sprite;
 		
 		private var movieLoader:Loader;
+		private var movieClipWrapper:MovieClipWrapper;
 		
 		private var mComponentMap:Dictionary = new Dictionary();
 		
 		private var mapConfig:Array = [
-			{"frame":2,"type":"widget.MImage"},
-			{"frame":2,"type":"widget.MLabel"},
-			{"frame":2,"type":"widget.MImage"},
-			{"frame":2,"type":"widget.MLabel"},
-			{"frame":2,"type":"widget.MImage"},
-			{"frame":122,"type":"widget.MImage"},
-			{"frame":1143,"type":"widget.MLabel"},
-			{"frame":1403,"type":"widget.MLabel"}];
+			{"frame":1,"type":"widget.Image"},{"frame":1,"type":"widget.Image"},
+			{"frame":1,"type":"widget.Document"},{"frame":956,"type":"widget.Image"},
+			{"frame":956,"type":"widget.Label"},{"frame":1403,"type":"widget.Image"},{"frame":1403,"type":"widget.Label"}];
 		
 		public function Main()
 		{
+			stage.frameRate = frameRate;
 			initContainer();
 			initUI();
 			initMovie();
@@ -86,9 +86,11 @@ package
 			this.addToolChild(this.playBtn);
 			
 			this.timeStampField = new TextField();
+			this.timeStampField.autoSize = "left";
+			this.timeStampField.textColor = 0xffffff;
+			this.timeStampField.defaultTextFormat = new TextFormat(null, 30);
 			this.timeStampField.x = 600;
 			this.timeStampField.y = 600;
-			this.timeStampField.text = "0:23 / 1:25";
 			this.addToolChild(this.timeStampField);
 		}
 		
@@ -97,12 +99,9 @@ package
 			var btn:Button = event.currentTarget as Button;
 			var obj:Object = btn.getClientProperty();
 			
-			trace(obj.frame, obj.type);
 			var movie:MovieClip = this.movieLoader.content as MovieClip;
 			movie.gotoAndStop(obj.frame);
 			this.playBtn.toggled = false;
-			// TODO Auto-generated method stub
-			
 		}
 		
 		private function addToolChild(child:DisplayObject):void
@@ -128,14 +127,21 @@ package
 		{
 			var movie:MovieClip = LoaderInfo(event.target).content as MovieClip;
 			movie.stop();
-			//			movie.addEventListener(Event.ENTER_FRAME, onMovieEnterFrame);
-			trace("onMovieLoadInit", movie.totalFrames);
+			
+			this.movieClipWrapper = new MovieClipWrapper(movie);
+			movie.addEventListener(Event.ENTER_FRAME, onMovieEnterFrame);
+//			trace("onMovieLoadInit", movie.totalFrames);
 		}
 		
-		private function updateTimeStamp():void
+		private function onMovieEnterFrame(e:Event):void
 		{
-			// TODO Auto Generated method stub
-			
+			this.timeStampField.text = formatString("{0}/{1}", this.movieClipWrapper.currentTime>>0, this.movieClipWrapper.totalTime>>0);
+		}
+		protected function formatString(format:String, ...args):String{
+			for(var i:int=0; i < args.length; i++){
+				format = format.replace(new RegExp('\\{'+i+'\\}', "g"), args[i]);
+			}
+			return format;
 		}
 		
 		protected function onTogglBbtnChange(event:Event):void

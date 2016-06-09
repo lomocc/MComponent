@@ -1,5 +1,7 @@
 package utils
 {
+	import mx.binding.utils.ChangeWatcher;
+	import mx.binding.utils.BindingUtils;
 	/**
 	 * 绑定
 	 * @author vincent 刘峰[liufeng#vertexgame.com] <br>2013年5月22日15:25:37

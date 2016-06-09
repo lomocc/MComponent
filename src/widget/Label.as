@@ -40,7 +40,6 @@
 		}
 		protected function updateMask():void
 		{
-			trace("updateMask Label", startWidth, startHeight);
 			this._mask.graphics.clear();
 			this._mask.graphics.beginFill(0xf8f8f8);
 			this._mask.graphics.drawRect(0,0, startWidth, startHeight);
@@ -55,12 +54,10 @@
 		override protected function render():void {
 			if(this.text){
 				var url:String = this.serverURL;//formatString("{0}?text={1}&font={2}", this.serverURL, this.text, this.font);
-				trace("load font _font", true, url, _font);
 				this.loader.load(new URLRequest(url));
 				this.loader.mask = this._mask;
 				
 			}else{
-				trace("load", false);
 				this.loader.mask = null;
 			}
 			this.updateMask();
