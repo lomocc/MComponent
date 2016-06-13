@@ -29,8 +29,8 @@ package component.base
 		
 		protected var _skinColor:uint = 0xffffff;
 		
-		protected var _skinWidth:Number = 50;
-		protected var _skinHeight:Number = 50;
+		protected var _skinWidth:Number = 30;
+		protected var _skinHeight:Number = 30;
 		
 		public function ButtonBase()
 		{

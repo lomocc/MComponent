@@ -23,5 +23,9 @@ package component
 		{
 			return this._mc.currentFrame/this._frameRate;
 		}
+		public function get movieClip():MovieClip
+		{
+			return this._mc;
+		}
 	}
 }

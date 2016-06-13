@@ -3,7 +3,9 @@
 	import flash.display.Sprite;
 	import flash.net.URLRequest;
 	
-	dynamic public class Image extends Component
+	import widget.interfaces.IImage;
+	
+	dynamic public class Image extends Widget implements IImage
 	{
 		private var _mask:Sprite = new Sprite();
 		public function Image()

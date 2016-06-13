@@ -6,14 +6,16 @@ package widget
 	import flash.events.Event;
 	import flash.utils.Dictionary;
 	
-	public class Component extends MovieClip
+	import widget.interfaces.IWidget;
+	
+	public class Widget extends MovieClip implements IWidget
 	{
 		protected var container:Sprite;
 		protected var loader:Loader = new Loader();
 		protected var startWidth:Number;
 		protected var startHeight:Number;
 		
-		public function Component()
+		public function Widget()
 		{
 			super();
 			
