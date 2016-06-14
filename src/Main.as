@@ -13,11 +13,12 @@ package
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	import flash.utils.Dictionary;
-	import flash.utils.getQualifiedClassName;
 	
-	import component.MovieClipWrapper;
-	import component.PlayButton;
-	import component.base.Button;
+	import utils.MovieClipWrapper;
+	import component.base.display.TSprite;
+	import component.buttons.CommonButton;
+	import component.buttons.CommonToggleButton;
+	import component.utils.DisplayUtil;
 	
 	import widget.interfaces.IImage;
 	import widget.interfaces.ILabel;
@@ -26,6 +27,8 @@ package
 	[SWF(width="800", height="600")]
 	public class Main extends Sprite
 	{
+		public var ui:ThemeUI = new ThemeUI();
+		
 		public var frameRate:uint = 24;
 		
 		public var containerWidth:uint = 800;
@@ -40,7 +43,7 @@ package
 		
 		private var componentList:Sprite;
 		
-		private var playBtn:PlayButton;
+		private var playBtn:CommonToggleButton;
 		private var timeStampField:TextField;
 		
 		private var movieContainer:Sprite;
@@ -57,6 +60,7 @@ package
 		private var framesConfig:Object;
 		public function Main()
 		{
+			DisplayUtil.initStage(stage);
 			stage.frameRate = frameRate;
 			initFrames();
 			initContainer();
@@ -100,25 +104,23 @@ package
 		
 		private function initUI():void
 		{
-			//			this.componentList = new Sprite();
-			//			this.addToolChild(this.componentList);
 			for (var i:int = 0; i < this.mapConfig.length; i++) 
 			{
 				var obj:Object = this.mapConfig[i];
-				var btn:Button = new Button();
-				btn.label = obj.type + i;
+				var btn:TSprite = new TSprite();
+//				btn.label = obj.type + i;
 				btn.addEventListener(MouseEvent.CLICK, this.onComponentClick);
 				btn.x = 80 * i;
-				btn.putClientProperty(obj);
+//				btn.putClientProperty(obj);
 				this.componentList.addChild(btn);
 			}
 			
-			this.playBtn = new PlayButton();
-			this.playBtn.addEventListener(Event.CHANGE, this.onTogglBbtnChange);
-			this.playBtn.x = 10;
-			//			this.playBtn.y = 410;
-			this.playBtn.label = "播放";
-			this.addToolChild(this.playBtn);
+//			this.playBtn = new PlayButton();
+//			this.playBtn.addEventListener(Event.CHANGE, this.onTogglBbtnChange);
+//			this.playBtn.x = 10;
+//			//			this.playBtn.y = 410;
+//			this.playBtn.label = "播放";
+//			this.addToolChild(this.playBtn);
 			
 			this.timeStampField = new TextField();
 			this.timeStampField.autoSize = "left";
@@ -126,16 +128,21 @@ package
 			this.timeStampField.defaultTextFormat = new TextFormat(null, 30);
 			//			this.timeStampField.y = 410;
 			this.addToolChild(this.timeStampField);
+			
+			this.ui = new ThemeUI();
+			this.addChild(this.ui);
+			new CommonButton(this.ui.btn_test, "播放");
+			this.playBtn = new CommonToggleButton(this.ui.btn_toggle, "toggle", this.onTogglBbtnChange)
 		}
 		
 		protected function onComponentClick(event:MouseEvent):void
 		{
-			this.playBtn.toggled = false;
-			var btn:Button = event.currentTarget as Button;
-			var obj:Object = btn.getClientProperty();
-			
-			var movie:MovieClip = this.movieLoader.content as MovieClip;
-			movie.gotoAndStop(obj.frame);
+//			this.playBtn.toggled = false;
+//			var btn:Button = event.currentTarget as Button;
+//			var obj:Object = btn.getClientProperty();
+//			
+//			var movie:MovieClip = this.movieLoader.content as MovieClip;
+//			movie.gotoAndStop(obj.frame);
 		}
 		
 		private function addToolChild(child:DisplayObject):void
@@ -233,10 +240,10 @@ package
 		}
 		
 		
-		protected function onTogglBbtnChange(event:Event):void
+		protected function onTogglBbtnChange():void
 		{
 			var movie:MovieClip = this.movieLoader.content as MovieClip;
-			if(event.target.toggled){
+			if(this.playBtn.selected){
 				movie.play();
 			}else{
 				movie.stop();
