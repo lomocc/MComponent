@@ -6,6 +6,7 @@ package component.base
 	import flash.geom.Rectangle;
 	
 	import component.base.ui.TSliderUI;
+	import component.utils.DisplayUtil;
 	
 	[Event(name="change", type="flash.events.Event")]
 	
@@ -14,6 +15,7 @@ package component.base
 	 */	
 	public class TSlider extends TComponent
 	{
+		protected var _dragging:Boolean = false;
 		protected var _handle:Sprite;
 		protected var _back:Sprite;
 		protected var _backClick:Boolean = true;
@@ -44,7 +46,10 @@ package component.base
 			}
 			
 		}
-		
+		public function get dragging():Boolean
+		{
+			return this._dragging;
+		}
 		/**
 		 * Initializes the component.
 		 */
@@ -210,8 +215,9 @@ package component.base
 		 */
 		protected function onDrag(event:MouseEvent):void
 		{
-			ViewManager.getStage().addEventListener(MouseEvent.MOUSE_UP, onDrop);
-			ViewManager.getStage().addEventListener(MouseEvent.MOUSE_MOVE, onSlide);
+			this._dragging = true;
+			DisplayUtil.getStage().addEventListener(MouseEvent.MOUSE_UP, onDrop);
+			DisplayUtil.getStage().addEventListener(MouseEvent.MOUSE_MOVE, onSlide);
 			if(_orientation == HORIZONTAL)
 			{
 				_handle.startDrag(false, new Rectangle(0, 0, _width - _handle.width, 0));
@@ -229,9 +235,10 @@ package component.base
 		 */
 		protected function onDrop(event:MouseEvent):void
 		{
-			ViewManager.getStage().removeEventListener(MouseEvent.MOUSE_UP, onDrop);
-			ViewManager.getStage().removeEventListener(MouseEvent.MOUSE_MOVE, onSlide);
+			DisplayUtil.getStage().removeEventListener(MouseEvent.MOUSE_UP, onDrop);
+			DisplayUtil.getStage().removeEventListener(MouseEvent.MOUSE_MOVE, onSlide);
 			stopDrag();
+			this._dragging = false;
 		}
 		
 		
@@ -304,12 +311,12 @@ package component.base
 		 */
 		public function set value(v:Number):void
 		{
-			if(_value ==v) return;
+			if(_value ==v || this._dragging) return;
 			_value = v;
 			correctValue();
 			positionHandle();
-			if(!_enabled) return;
-			dispatchEvent(new Event(Event.CHANGE));
+//			if(!_enabled) return;
+//			dispatchEvent(new Event(Event.CHANGE));
 			
 		}
 		public function get value():Number

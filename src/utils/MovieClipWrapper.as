@@ -23,6 +23,15 @@ package utils
 		{
 			return this._mc.currentFrame/this._frameRate;
 		}
+		public function get progress():Number
+		{
+			return this.currentTime/this.totalTime;
+		}
+		public function set progress(v:Number):void
+		{
+			var newFrame:int = v * this._totalTime * this._frameRate;
+			this._mc.gotoAndStop(newFrame);
+		}
 		public function get movieClip():MovieClip
 		{
 			return this._mc;

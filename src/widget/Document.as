@@ -36,6 +36,12 @@
 			loop(this);
 			if(this.currentFrame == this.totalFrames){
 				trace(JSON.stringify(this.widgets));
+				for (var i:* in mComponentMap) 
+				{
+					trace(i.toString());
+				}
+				
+				
 				this.removeEventListener(Event.FRAME_CONSTRUCTED, frameConstructed);
 			}
 		}

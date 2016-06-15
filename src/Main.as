@@ -14,11 +14,14 @@ package
 	import flash.text.TextFormat;
 	import flash.utils.Dictionary;
 	
-	import utils.MovieClipWrapper;
+	import component.base.TSlider;
 	import component.base.display.TSprite;
+	import component.base.ui.TSliderUI;
 	import component.buttons.CommonButton;
 	import component.buttons.CommonToggleButton;
 	import component.utils.DisplayUtil;
+	
+	import utils.MovieClipWrapper;
 	
 	import widget.interfaces.IImage;
 	import widget.interfaces.ILabel;
@@ -44,6 +47,7 @@ package
 		private var componentList:Sprite;
 		
 		private var playBtn:CommonToggleButton;
+		public var progressSlider:TSlider;
 		private var timeStampField:TextField;
 		
 		private var movieContainer:Sprite;
@@ -54,7 +58,9 @@ package
 		
 		private var mComponentMap:Dictionary = new Dictionary();
 		
-		private var mapConfig:Array = [{"scale":1,"url":"images/content.png","frame":1,"type":"widget::Image","contentX":0,"contentY":0},{"scale":1,"url":"images/content.png","frame":1,"type":"widget::Image","contentX":0,"contentY":0},{"scale":0.1,"url":"images/QQ123.png","frame":1,"type":"widget::Image","contentX":0,"contentY":0},{"scale":1,"url":"images/content.png","frame":1,"type":"widget::Image","contentX":0,"contentY":0},{"scale":1,"frame":955,"text":"请输入文字","type":"widget::Label","contentX":0,"font":"微软雅黑","contentY":0},{"scale":1,"url":"images/content.png","frame":955,"type":"widget::Image","contentX":0,"contentY":0},{"scale":1,"frame":1402,"text":"请输入文字","type":"widget::Label","contentX":0,"font":"微软雅黑","contentY":0},{"scale":1,"url":"images/content.png","frame":1402,"type":"widget::Image","contentX":0,"contentY":0}];
+		private var mapConfig:Array = [{"contentX":0,"scale":1,"url":"images/scene.jpg","contentY":0,"type":"widget::Image","frame":1},{"contentX":0,"scale":1,"contentY":0,"text":"请输入文字","font":"微软雅黑","frame":1,"type":"widget::Label"}];
+
+//			[{"scale":1,"url":"images/content.png","frame":1,"type":"widget::Image","contentX":0,"contentY":0},{"scale":1,"url":"images/content.png","frame":1,"type":"widget::Image","contentX":0,"contentY":0},{"scale":0.1,"url":"images/QQ123.png","frame":1,"type":"widget::Image","contentX":0,"contentY":0},{"scale":1,"url":"images/content.png","frame":1,"type":"widget::Image","contentX":0,"contentY":0},{"scale":1,"frame":955,"text":"请输入文字","type":"widget::Label","contentX":0,"font":"微软雅黑","contentY":0},{"scale":1,"url":"images/content.png","frame":955,"type":"widget::Image","contentX":0,"contentY":0},{"scale":1,"frame":1402,"text":"请输入文字","type":"widget::Label","contentX":0,"font":"微软雅黑","contentY":0},{"scale":1,"url":"images/content.png","frame":1402,"type":"widget::Image","contentX":0,"contentY":0}];
 
 //			[{"scale":1,"url":"images/scene.jpg","contentX":0,"type":"widget::Image","frame":1,"contentY":0},{"scale":1,"url":"images/scene.jpg","contentX":0,"type":"widget::Image","frame":1,"contentY":0},{"scale":0.1,"url":"images/QQ123.png","contentX":0,"type":"widget::Image","frame":1,"contentY":0},{"scale":1,"url":"images/scene.jpg","contentX":0,"type":"widget::Image","frame":1,"contentY":0},{"scale":1,"contentX":0,"type":"widget::Label","text":"请输入文字","font":"微软雅黑","frame":955,"contentY":0},{"scale":1,"url":"images/scene.jpg","contentX":0,"type":"widget::Image","frame":955,"contentY":0},{"scale":1,"contentX":0,"type":"widget::Label","text":"请输入文字","font":"微软雅黑","frame":1402,"contentY":0},{"scale":1,"url":"images/scene.jpg","contentX":0,"type":"widget::Image","frame":1402,"contentY":0}];
 		private var framesConfig:Object;
@@ -132,7 +138,17 @@ package
 			this.ui = new ThemeUI();
 			this.addChild(this.ui);
 			new CommonButton(this.ui.btn_test, "播放");
-			this.playBtn = new CommonToggleButton(this.ui.btn_toggle, "toggle", this.onTogglBbtnChange)
+			this.playBtn = new CommonToggleButton(this.ui.btn_play, "toggle", this.onTogglBbtnChange);
+			
+			progressSlider = new TSlider(new TSliderUI(this.ui.mc_progress), TSlider.HORIZONTAL, onProgressSliderChange);
+			progressSlider.maximum = 1;
+			progressSlider.minimum = 0;
+		}
+		
+		private function onProgressSliderChange(e:Event):void
+		{
+			this.movieClipWrapper.progress = progressSlider.value;
+			this.playBtn.selected = false;
 		}
 		
 		protected function onComponentClick(event:MouseEvent):void
@@ -157,7 +173,7 @@ package
 		}
 		private function initMovie():void
 		{
-			var mivieURL:String = "Template-61.swf";
+			var mivieURL:String = "./fla/Template-61.swf";
 			this.movieLoader = new Loader();
 			this.movieLoader.x = this.containerWidth - this.movieWidth >> 1;
 			this.movieLoader.y = this.containerHeight - this.movieHeight >> 1;
@@ -183,7 +199,6 @@ package
 			//			trace("frame", this.movieClipWrapper.movieClip.currentFrame);
 			if(currentFrame != lastFrame){
 				lastFrame = currentFrame;
-				trace("onMovieFrameConstructed", currentFrame);
 				this.timeStampField.text = formatString("{0}/{1}", toTimeString(this.movieClipWrapper.currentTime), toTimeString(this.movieClipWrapper.totalTime));
 				this.timeStampField.x = this.containerWidth - this.toolPadding - this.timeStampField.width;
 				
@@ -191,6 +206,7 @@ package
 					loop(this.movieClipWrapper.movieClip, framesConfig[currentFrame].concat())
 				}
 			}
+			progressSlider.value = this.movieClipWrapper.progress;
 		}
 		private function loop(node:DisplayObject, widgets:Array):void{
 			if(node is IWidget){
@@ -198,22 +214,22 @@ package
 					mComponentMap[node] = true;
 					
 					var props:Object = widgets.shift();
-					//					var props:Object = {frame:this.currentFrame, type:getQualifiedClassName(node)};
-					//					props.contentX = (node as IWidget).contentX;
-					//					props.contentY = (node as IWidget).contentY;
-					//					props.scale = (node as IWidget).scale;
-					
-					if(node is IImage)
-					{
-						if((node as IImage).url != props.url){
-							trace(node);
+					if(props){
+						(node as IWidget).contentX = props.contentX;
+						(node as IWidget).contentY = props.contentY;
+						(node as IWidget).scale = props.scale;
+						
+						if(node is IImage)
+						{
+							if((node as IImage).url != props.url){
+								trace(node);
+							}
+							(node as IImage).url = props.url;
+						}else if(node is ILabel){
+							(node as ILabel).text = props.text;
+							(node as ILabel).font = props.font;
 						}
-						(node as IImage).url = props.url;
-					}else if(node is ILabel){
-						(node as ILabel).text = props.text;
-						(node as ILabel).font = props.font;
 					}
-					
 				}
 			}else if(node is DisplayObjectContainer){
 				for(var i:int = 0, l:int = (node as DisplayObjectContainer).numChildren;i < l;i++)
