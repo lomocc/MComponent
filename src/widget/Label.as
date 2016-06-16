@@ -1,10 +1,7 @@
 ﻿package widget
 {
 	import flash.display.Sprite;
-	import flash.events.Event;
 	import flash.net.URLRequest;
-	
-	import utils.Cache;
 	
 	import widget.interfaces.ILabel;
 	
@@ -66,13 +63,6 @@
 				this.loader.mask = null;
 			}
 			this.updateMask();
-		}
-		
-		protected function onFontLoaded(event:Event):void
-		{
-			this.loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, this.onFontLoaded);
-			var url:String = this.serverURL;
-			Cache.put(url, this.loader.contentLoaderInfo.bytes);
 		}
 	}
 }

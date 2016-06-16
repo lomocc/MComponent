@@ -9,6 +9,7 @@ package
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	import flash.media.SoundTransform;
 	import flash.net.URLRequest;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
@@ -46,8 +47,9 @@ package
 		private var componentList:Sprite;
 		
 		private var playBtn:CommonToggleButton;
+		private var soundBtn:CommonToggleButton;
 		public var progressSlider:TSlider;
-		private var timeStampField:TextField;
+//		private var timeStampField:TextField;
 		
 		private var movieContainer:Sprite;
 		private var toolContainer:Sprite;
@@ -127,21 +129,29 @@ package
 //			this.playBtn.label = "播放";
 //			this.addToolChild(this.playBtn);
 			
-			this.timeStampField = new TextField();
-			this.timeStampField.autoSize = "left";
-			this.timeStampField.textColor = 0xffffff;
-			this.timeStampField.defaultTextFormat = new TextFormat(null, 30);
-			//			this.timeStampField.y = 410;
-			this.addToolChild(this.timeStampField);
+//			this.timeStampField = new TextField();
+//			this.timeStampField.autoSize = "left";
+//			this.timeStampField.textColor = 0xffffff;
+//			this.timeStampField.defaultTextFormat = new TextFormat(null, 30);
+//			//			this.timeStampField.y = 410;
+//			this.addToolChild(this.timeStampField);
 			
 			this.ui = new ThemeUI();
 			this.addChild(this.ui);
-			new CommonButton(this.ui.btn_test, "播放");
-			this.playBtn = new CommonToggleButton(this.ui.btn_play, "toggle", this.onTogglBbtnChange);
+			this.soundBtn = new CommonToggleButton(this.ui.btn_sound, "", onTogglSoundChange);
+			this.playBtn = new CommonToggleButton(this.ui.btn_play, "", this.onTogglBtnChange);
 			
 			progressSlider = new TSlider(new TSliderUI(this.ui.mc_progress), TSlider.HORIZONTAL, onProgressSliderChange);
 			progressSlider.maximum = 1;
 			progressSlider.minimum = 0;
+		}
+		private function onTogglSoundChange():void
+		{
+			if(this.soundBtn.selected){
+				this.movieClipWrapper.movieClip.soundTransform = new SoundTransform(0);
+			}else{
+				this.movieClipWrapper.movieClip.soundTransform = new SoundTransform(1);
+			}
 		}
 		
 		private function onProgressSliderChange(e:Event):void
@@ -198,8 +208,8 @@ package
 			//			trace("frame", this.movieClipWrapper.movieClip.currentFrame);
 			if(currentFrame != lastFrame){
 				lastFrame = currentFrame;
-				this.timeStampField.text = formatString("{0}/{1}", toTimeString(this.movieClipWrapper.currentTime), toTimeString(this.movieClipWrapper.totalTime));
-				this.timeStampField.x = this.containerWidth - this.toolPadding - this.timeStampField.width;
+				this.ui.tf_timeStamp.text = formatString("{0}/{1}", toTimeString(this.movieClipWrapper.currentTime), toTimeString(this.movieClipWrapper.totalTime));
+//				this.ui.tf_timeStamp.x = this.containerWidth - this.toolPadding - this.timeStampField.width;
 				
 				if(framesConfig[currentFrame]){
 					loop(this.movieClipWrapper.movieClip, framesConfig[currentFrame].concat())
@@ -255,7 +265,7 @@ package
 		}
 		
 		
-		protected function onTogglBbtnChange():void
+		protected function onTogglBtnChange():void
 		{
 			var movie:MovieClip = this.movieLoader.content as MovieClip;
 			if(this.playBtn.selected){
