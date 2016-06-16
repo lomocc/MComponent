@@ -14,14 +14,13 @@ package
 	import flash.text.TextFormat;
 	import flash.utils.Dictionary;
 	
-	import component.base.TSlider;
-	import component.base.display.TSprite;
-	import component.base.ui.TSliderUI;
-	import component.buttons.CommonButton;
-	import component.buttons.CommonToggleButton;
-	import component.utils.DisplayUtil;
-	
-	import utils.MovieClipWrapper;
+	import app.components.CommonButton;
+	import app.components.CommonToggleButton;
+	import app.components.TSlider;
+	import app.components.TSliderUI;
+	import app.components.TSprite;
+	import app.utils.DisplayUtil;
+	import app.utils.MovieClipWrapper;
 	
 	import widget.interfaces.IImage;
 	import widget.interfaces.ILabel;
