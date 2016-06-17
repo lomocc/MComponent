@@ -1,5 +1,10 @@
 package
 {
+	import com.greensock.TweenLite;
+	import com.greensock.plugins.AutoAlphaPlugin;
+	import com.greensock.plugins.TweenPlugin;
+	import com.greensock.plugins.VolumePlugin;
+	
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Graphics;
@@ -9,13 +14,9 @@ package
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
-	import flash.media.SoundTransform;
 	import flash.net.URLRequest;
-	import flash.text.TextField;
-	import flash.text.TextFormat;
 	import flash.utils.Dictionary;
 	
-	import app.components.CommonButton;
 	import app.components.CommonToggleButton;
 	import app.components.TSlider;
 	import app.components.TSliderUI;
@@ -27,9 +28,10 @@ package
 	import widget.interfaces.ILabel;
 	import widget.interfaces.IWidget;
 	
-	[SWF(width="800", height="600")]
 	public class Main extends Sprite
 	{
+		TweenPlugin.activate([VolumePlugin, AutoAlphaPlugin]);
+		
 		public var ui:ThemeUI = new ThemeUI();
 		
 		public var frameRate:uint = 24;
@@ -67,6 +69,11 @@ package
 		private var framesConfig:Object;
 		public function Main()
 		{
+			this.addEventListener(Event.ADDED_TO_STAGE, this.addedToStage);
+		}
+		
+		protected function addedToStage(event:Event):void
+		{
 			DisplayUtil.initStage(stage);
 			stage.frameRate = frameRate;
 			initFrames();
@@ -88,10 +95,7 @@ package
 			}		
 		}
 		private function initContainer():void
-		{
-			stage.scaleMode = "noScale";
-			stage.align = "tl";
-			
+		{	
 			var g:Graphics = this.graphics;
 			g.beginFill(0x313131);
 			g.drawRect(0, 0, stage.stageWidth, stage.stageHeight);
@@ -148,9 +152,11 @@ package
 		private function onTogglSoundChange():void
 		{
 			if(this.soundBtn.selected){
-				this.movieClipWrapper.movieClip.soundTransform = new SoundTransform(0);
+				TweenLite.to(this.movieClipWrapper.movieClip, 1, {volume:0});
+//				this.movieClipWrapper.movieClip.soundTransform = new SoundTransform(0);
 			}else{
-				this.movieClipWrapper.movieClip.soundTransform = new SoundTransform(1);
+				TweenLite.to(this.movieClipWrapper.movieClip, 1, {volume:1});
+//				this.movieClipWrapper.movieClip.soundTransform = new SoundTransform(1);
 			}
 		}
 		

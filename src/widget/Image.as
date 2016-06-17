@@ -1,21 +1,39 @@
 ﻿package widget
 {
+	import flash.display.Loader;
 	import flash.display.Sprite;
+	import flash.events.Event;
 	import flash.net.URLRequest;
 	
 	import widget.interfaces.IImage;
 	
 	dynamic public class Image extends Widget implements IImage
 	{
-		private var _mask:Sprite = new Sprite();
+		protected var container:Sprite;
+		protected var loader:Loader;
+		private var _mask:Sprite;
 		public function Image()
 		{
 			super();
 		}
 		override protected function createChildren():void
 		{
-			this.addChild(this._mask);
 			super.createChildren();
+			
+			this.container = new Sprite();
+			
+			this.loader = new Loader();
+			this.loader.contentLoaderInfo.addEventListener(Event.INIT, this.onLoaderInit);
+			
+			this.container.addChild(this.loader);
+			this.addChild(this.container);
+			
+			this._mask = new Sprite();
+			this.addChild(this._mask);
+		}
+		protected function onLoaderInit(event:Event):void{
+			this.container.x = (this.startWidth - this.loader.width)/2;
+			this.container.y = (this.startHeight - this.loader.height)/2;
 		}
 		
 		protected var _url:String = "images/content.png";

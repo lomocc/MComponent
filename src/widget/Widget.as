@@ -1,8 +1,6 @@
 package widget
 {
-	import flash.display.Loader;
 	import flash.display.MovieClip;
-	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.utils.Dictionary;
 	
@@ -10,8 +8,6 @@ package widget
 	
 	public class Widget extends MovieClip implements IWidget
 	{
-		protected var container:Sprite;
-		protected var loader:Loader = new Loader();
 		protected var startWidth:Number;
 		protected var startHeight:Number;
 		
@@ -31,39 +27,36 @@ package widget
 		}
 		protected function createChildren():void
 		{
-			this.container = new Sprite();
-			this.container.addChild(this.loader);
-			this.addChild(this.container);
 			
-			this.loader.contentLoaderInfo.addEventListener(Event.INIT, this.onLoaderInit);
 		}
 		
-		protected function onLoaderInit(event:Event):void{
-			this.container.x = (this.startWidth - this.loader.width)/2;
-			this.container.y = (this.startHeight - this.loader.height)/2;
-		}
+		private var _contentX:Number = 0;
 		[Inspectable(type="Number", defaultValue="0", name="x（横坐标）")]
 		public function get contentX():Number { 
-			return this.loader.x;
+			return this._contentX;
 		}
 		public function set contentX(value:Number):void {
-			this.loader.x = value;
+			this._contentX = value;
+			this.invalidate();
 		}
+		private var _contentY:Number = 0;
 		[Inspectable(type="Number", defaultValue="0", name="y（纵坐标）")]
 		public function get contentY():Number {
-			return this.loader.y;
+			return this._contentY;
 		}
 		public function set contentY(value:Number):void {
-			this.loader.y = value;
+			this._contentY = value;
+			this.invalidate();
 		}
+		private var _scale:Number = 1;
 		[Inspectable(type="Number", defaultValue="1", name="scale（缩放）")]
 		public function get scale():Number {
-			return this.loader.scaleX;
+			return this._scale;
 		}
 		
 		public function set scale(value:Number):void {
-			this.loader.scaleX = value;
-			this.loader.scaleY = value;
+			this._scale = value;
+			this.invalidate();
 		}
 		
 		//		public function get contentWidth():Number { 

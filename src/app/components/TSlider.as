@@ -140,7 +140,7 @@ package app.components
 			if(_orientation == HORIZONTAL)
 			{
 				range = _width - _handle.width;
-				_handle.x = (_value - _min) / (_max - _min) * range>>0;
+				_handle.x = Math.round((_value - _min) / (_max - _min) * range);
 			}
 			else
 			{
