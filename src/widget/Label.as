@@ -1,7 +1,12 @@
 ﻿package widget
 {
 	import flash.display.Sprite;
+	import flash.events.Event;
 	import flash.net.URLRequest;
+	import flash.text.TextField;
+	import flash.text.TextFormat;
+	
+	import app.utils.FontLoader;
 	
 	import widget.interfaces.ILabel;
 	
@@ -9,6 +14,8 @@
 	{
 		private var serverURL:String = "images/font.swf";
 		private var _mask:Sprite = new Sprite();
+		
+		private var _tf:TextField = new TextField();
 		
 		public function Label()
 		{
@@ -40,6 +47,16 @@
 			
 			this.invalidate();
 		}
+		protected var _color:uint = 0;
+		[Inspectable(type="Color", defaultValue="0x000000", name="color（文本颜色）")]
+		public function get color():uint {
+			return _color;
+		}
+		public function set color(value:uint):void {
+			_color = value;
+			
+			this.invalidate();
+		}
 		protected function updateMask():void
 		{
 			this._mask.graphics.clear();
@@ -55,14 +72,25 @@
 		}
 		override protected function render():void {
 			if(this.text){
-				var url:String = this.serverURL;//formatString("{0}?text={1}&font={2}", this.serverURL, this.text, this.font);
-				this.loader.load(new URLRequest(url));
-				this.loader.mask = this._mask;
+//				var url:String = this.serverURL;//formatString("{0}?text={1}&font={2}", this.serverURL, this.text, this.font);
+//				this.loader.load(new URLRequest(url));
+//				this.loader.mask = this._mask;
 				
+				this._tf.text = this.text;
+				
+				var url:String = 'images/myboldfont.swf';
+				var fontLoader:FontLoader = new FontLoader( new URLRequest( url ) );
+				fontLoader.addEventListener( Event.COMPLETE, onFontLoaded );
+				this._tf.mask = this._mask;
 			}else{
 				this.loader.mask = null;
 			}
 			this.updateMask();
+		}
+		
+		protected function onFontLoaded(event:Event):void
+		{
+			this._tf.setTextFormat(new TextFormat(this.font, 20, this.color));
 		}
 	}
 }
