@@ -1,4 +1,10 @@
 {
-	"Main":"Main.swf",
-	"ThemeUI":"fla/ThemeUI.swf"
+	"Main":{
+		"url":"Main.swf",
+		"estimatedBytes":30000
+	},
+	"ThemeUI":{
+		"url":"fla/ThemeUI.swf",
+		"estimatedBytes":20000
+	}
 }

@@ -30,8 +30,8 @@ package
 			
 			var queue:LoaderMax = new LoaderMax();
 			queue.maxConnections = 1;
-			queue.append(new SWFLoader(config.ThemeUI, {context:new LoaderContext(false, ApplicationDomain.currentDomain), autoDispose:true}));
-			queue.append(new SWFLoader(config.Main, {context:new LoaderContext(false, ApplicationDomain.currentDomain), onComplete:mainCompleteHandler}));
+			queue.append(new SWFLoader(config.ThemeUI.url, {context:new LoaderContext(false, ApplicationDomain.currentDomain), autoDispose:true, estimatedBytes:config.ThemeUI.estimatedBytes}));
+			queue.append(new SWFLoader(config.Main.url, {context:new LoaderContext(false, ApplicationDomain.currentDomain), estimatedBytes:config.Main.estimatedBytes, onComplete:mainCompleteHandler}));
 			queue.load();
 		}
 		private function mainCompleteHandler(event:LoaderEvent):void {
