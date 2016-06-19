@@ -1,6 +1,5 @@
 ﻿package widget
 {
-	import flash.events.Event;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	
@@ -35,6 +34,16 @@
 			
 			this.invalidate();
 		}
+		protected var _textColor:uint = 0;
+		[Inspectable(format="Color", type="Color", defaultValue=0x000000, name="textColor（文本颜色）")]
+		public function get textColor():uint {
+			return _textColor;
+		}
+		public function set textColor(value:uint):void {
+			_textColor = value;
+			
+			this.invalidate();
+		}
 		protected var _font:String = "微软雅黑";
 		[Inspectable(type="Font Name", defaultValue="微软雅黑", name="font（字体）")]
 		public function get font():String {
@@ -45,13 +54,13 @@
 			
 			this.invalidate();
 		}
-		protected var _color:uint = 0;
-		[Inspectable(format="Color", type="Color", defaultValue=0x000000, name="color（文本颜色）")]
-		public function get color():uint {
-			return _color;
+		protected var _fontSize:uint = 12;
+		[Inspectable(type="Number", defaultValue=12, name="fontSize（字体大小）")]
+		public function get fontSize():Number {
+			return _fontSize;
 		}
-		public function set color(value:uint):void {
-			_color = value;
+		public function set fontSize(value:Number):void {
+			_fontSize = value;
 			
 			this.invalidate();
 		}
@@ -68,9 +77,7 @@
 			//				this.loader.mask = this._mask;
 			
 			this._tf.text = this.text;
-			
-			var size:uint = this.scale * 12;
-			var textFormat:TextFormat = new TextFormat(this.font, size, this.color);
+			var textFormat:TextFormat = new TextFormat(this.font, this.fontSize, this.textColor);
 			this._tf.setTextFormat(textFormat);
 			//				var url:String = 'images/myboldfont.swf';
 			//				var fontLoader:FontLoader = new FontLoader( new URLRequest( url ) );
@@ -81,11 +88,26 @@
 			//			}
 			//			this.updateMask();
 		}
-		
-		protected function onFontLoaded(event:Event):void
-		{
-			var size:uint = this.scale * 12;
-			this._tf.setTextFormat(new TextFormat(this.font, size, this.color));
+		override public function toConfig():Object{
+			var config:Object = super.toConfig();
+			config.text = this.text;
+			config.textColor = this.textColor;
+			config.font = this.font;
+			config.fontSize = this.fontSize;
+			return config;
 		}
+		override public function fromConfig(config:Object):void
+		{
+			super.fromConfig(config);
+			text = config.text;
+			textColor = config.textColor;
+			font = config.font;
+			fontSize = config.fontSize;
+		}
+		//		protected function onFontLoaded(event:Event):void
+		//		{
+		//			var size:uint = this.contentScale * 12;
+		//			this._tf.setTextFormat(new TextFormat(this.font, size, this.color));
+		//		}
 	}
 }

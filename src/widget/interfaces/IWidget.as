@@ -6,7 +6,9 @@ package widget.interfaces
 		function set contentX(value:Number):void;
 		function get contentY():Number;
 		function set contentY(value:Number):void;
-		function get scale():Number;
-		function set scale(value:Number):void;
+		function get contentScale():Number;
+		function set contentScale(value:Number):void;
+		function toConfig():Object;
+		function fromConfig(config:Object):void;
 	}
 }

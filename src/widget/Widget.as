@@ -1,6 +1,8 @@
 package widget
 {
+	import flash.display.DisplayObject;
 	import flash.display.MovieClip;
+	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.utils.Dictionary;
 	
@@ -8,15 +10,17 @@ package widget
 	
 	public class Widget extends MovieClip implements IWidget
 	{
-		protected var startWidth:Number;
-		protected var startHeight:Number;
+		//		protected var startWidth:Number;
+		//		protected var startHeight:Number;
+		
+		private var _contentDisplay:Sprite;
 		
 		public function Widget()
 		{
 			super();
 			
-			startWidth = this.width/this.scaleX;
-			startHeight = this.height/this.scaleY;
+			//			startWidth = this.width/this.scaleX;
+			//			startHeight = this.height/this.scaleY;
 			
 			if (numChildren > 0) {
 				removeChildAt(0);
@@ -25,11 +29,31 @@ package widget
 			this.createChildren();
 			this.invalidate();
 		}
+		public function contentDisplay():DisplayObject
+		{
+			return this._contentDisplay;
+		}
 		protected function createChildren():void
 		{
-			
+			this._contentDisplay = new Sprite();
+			super.addChild(this._contentDisplay);
 		}
-		
+		override public function addChild(child:DisplayObject):DisplayObject
+		{
+			return this._contentDisplay.addChild(child);
+		}
+		override public function addChildAt(child:DisplayObject, index:int):DisplayObject
+		{
+			return this._contentDisplay.addChildAt(child, index);
+		}
+		override public function removeChild(child:DisplayObject):DisplayObject
+		{
+			return this._contentDisplay.removeChild(child);
+		}
+		override public function removeChildAt(index:int):DisplayObject
+		{
+			return this._contentDisplay.removeChildAt(index);
+		}
 		private var _contentX:Number = 0;
 		[Inspectable(type="Number", defaultValue="0", name="x（横坐标）")]
 		public function get contentX():Number { 
@@ -48,23 +72,29 @@ package widget
 			this._contentY = value;
 			this.invalidate();
 		}
-		private var _scale:Number = 1;
+		private var _contentScale:Number = 1;
 		[Inspectable(type="Number", defaultValue="1", name="scale（缩放）")]
-		public function get scale():Number {
-			return this._scale;
+		public function get contentScale():Number {
+			return this._contentScale;
 		}
 		
-		public function set scale(value:Number):void {
-			this._scale = value;
+		public function set contentScale(value:Number):void {
+			this._contentScale = value;
 			this.invalidate();
 		}
-		
-		//		public function get contentWidth():Number { 
-		//			return this.loader.width;
-		//		}
-		//		public function get contentHeight():Number {
-		//			return this.loader.height; 
-		//		}
+		public function toConfig():Object{
+			return {
+				contentX:this.contentX, 
+					contentY:this.contentY, 
+					contentScale:this.contentScale
+			};
+		}
+		public function fromConfig(config:Object):void
+		{
+			contentX = config.contentX;
+			contentY = config.contentY;
+			contentScale = config.contentScale;
+		}
 		/////////////////////////////////////////////////////////////////////////////////////
 		// helper
 		/////////////////////////////////////////////////////////////////////////////////////
@@ -83,7 +113,10 @@ package widget
 			invalidFlag = false;
 		}
 		protected function render():void {
-			
+			this._contentDisplay.x = this.contentX;
+			this._contentDisplay.y = this.contentY;
+			this._contentDisplay.scaleX = this.contentScale;
+			this._contentDisplay.scaleY = this.contentScale
 		}
 		
 		private static var inCallLaterPhase:Boolean=false;

@@ -77,5 +77,23 @@ package app.utils
 			}
 			return false;
 		}
+		/**
+		 * 创建层
+		 * @param width 宽度
+		 * @param height 高度
+		 * @param bgColor 背景色
+		 * @param alpha 透明度
+		 * @return
+		 *
+		 */
+		public static function createSprite(width:int, height:int, bgColor:uint = 0xFFFFFF, alpha:Number = 1):Sprite
+		{
+			var sp:Sprite = new Sprite();
+			sp.graphics.beginFill(bgColor, alpha);
+			sp.graphics.drawRect(0, 0, width, height);
+			sp.graphics.endFill();
+			return sp;
+		}
+
 	}
 }

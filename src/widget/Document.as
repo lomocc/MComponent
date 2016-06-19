@@ -5,11 +5,7 @@
 	import flash.display.MovieClip;
 	import flash.events.Event;
 	import flash.utils.Dictionary;
-	import flash.utils.getDefinitionByName;
-	import flash.utils.getQualifiedClassName;
 	
-	import widget.interfaces.IImage;
-	import widget.interfaces.ILabel;
 	import widget.interfaces.IWidget;
 	
 	public class Document extends MovieClip
@@ -51,18 +47,8 @@
 				if(!mComponentMap[node]){
 					mComponentMap[node] = true;
 					
-					var props:Object = {frame:this.currentFrame, type:getQualifiedClassName(node)};
-					props.contentX = (node as IWidget).contentX;
-					props.contentY = (node as IWidget).contentY;
-					props.scale = (node as IWidget).scale;
-					
-					if(node is IImage){
-						props.url = (node as IImage).url;
-					}else if(node is ILabel){
-						props.text = (node as ILabel).text;
-						props.font = (node as ILabel).font;
-					}
-					this.widgets.push(props);
+					var config:Object = (node as IWidget).toConfig();//{frame:this.currentFrame, type:getQualifiedClassName(node)};
+					this.widgets.push(config);
 				}
 			}else if(node is DisplayObjectContainer){
 				for(var i:int = 0, l:int = (node as DisplayObjectContainer).numChildren-1;i<=l;i++)

@@ -18,14 +18,17 @@ package
 	import flash.utils.Dictionary;
 	
 	import app.components.CommonToggleButton;
+	import app.components.TListUI;
 	import app.components.TSlider;
 	import app.components.TSliderUI;
 	import app.components.TSprite;
+	import app.components.list.TList;
 	import app.utils.DisplayUtil;
 	import app.utils.MovieClipWrapper;
+	import app.views.WidgetItem;
 	
-	import widget.interfaces.IImage;
-	import widget.interfaces.ILabel;
+	import assets.ThemeUI;
+	
 	import widget.interfaces.IWidget;
 	
 	public class Main extends Sprite
@@ -46,12 +49,12 @@ package
 		
 		public var toolPadding:uint = 10;
 		
-		private var componentList:Sprite;
+		private var componentList:TList;
 		
 		private var playBtn:CommonToggleButton;
 		private var soundBtn:CommonToggleButton;
 		public var progressSlider:TSlider;
-//		private var timeStampField:TextField;
+		//		private var timeStampField:TextField;
 		
 		private var movieContainer:Sprite;
 		private var toolContainer:Sprite;
@@ -61,11 +64,13 @@ package
 		
 		private var mComponentMap:Dictionary = new Dictionary();
 		
-		private var mapConfig:Array = [{"contentX":0,"scale":1,"url":"images/scene.jpg","contentY":0,"type":"widget::Image","frame":1},{"contentX":0,"scale":1,"contentY":0,"text":"请输入文字","font":"微软雅黑","frame":1,"type":"widget::Label"}];
-
-//			[{"scale":1,"url":"images/content.png","frame":1,"type":"widget::Image","contentX":0,"contentY":0},{"scale":1,"url":"images/content.png","frame":1,"type":"widget::Image","contentX":0,"contentY":0},{"scale":0.1,"url":"images/QQ123.png","frame":1,"type":"widget::Image","contentX":0,"contentY":0},{"scale":1,"url":"images/content.png","frame":1,"type":"widget::Image","contentX":0,"contentY":0},{"scale":1,"frame":955,"text":"请输入文字","type":"widget::Label","contentX":0,"font":"微软雅黑","contentY":0},{"scale":1,"url":"images/content.png","frame":955,"type":"widget::Image","contentX":0,"contentY":0},{"scale":1,"frame":1402,"text":"请输入文字","type":"widget::Label","contentX":0,"font":"微软雅黑","contentY":0},{"scale":1,"url":"images/content.png","frame":1402,"type":"widget::Image","contentX":0,"contentY":0}];
-
-//			[{"scale":1,"url":"images/scene.jpg","contentX":0,"type":"widget::Image","frame":1,"contentY":0},{"scale":1,"url":"images/scene.jpg","contentX":0,"type":"widget::Image","frame":1,"contentY":0},{"scale":0.1,"url":"images/QQ123.png","contentX":0,"type":"widget::Image","frame":1,"contentY":0},{"scale":1,"url":"images/scene.jpg","contentX":0,"type":"widget::Image","frame":1,"contentY":0},{"scale":1,"contentX":0,"type":"widget::Label","text":"请输入文字","font":"微软雅黑","frame":955,"contentY":0},{"scale":1,"url":"images/scene.jpg","contentX":0,"type":"widget::Image","frame":955,"contentY":0},{"scale":1,"contentX":0,"type":"widget::Label","text":"请输入文字","font":"微软雅黑","frame":1402,"contentY":0},{"scale":1,"url":"images/scene.jpg","contentX":0,"type":"widget::Image","frame":1402,"contentY":0}];
+		private var mapConfig:Array = [
+			{"contentX":0,"scale":1,"url":"images/scene.jpg","contentY":0,"type":"widget::Image","frame":1},
+			{"contentX":0,"scale":1,"contentY":0,"text":"请输入文字","font":"微软雅黑","frame":1,"type":"widget::Label"}];
+		
+		//			[{"scale":1,"url":"images/content.png","frame":1,"type":"widget::Image","contentX":0,"contentY":0},{"scale":1,"url":"images/content.png","frame":1,"type":"widget::Image","contentX":0,"contentY":0},{"scale":0.1,"url":"images/QQ123.png","frame":1,"type":"widget::Image","contentX":0,"contentY":0},{"scale":1,"url":"images/content.png","frame":1,"type":"widget::Image","contentX":0,"contentY":0},{"scale":1,"frame":955,"text":"请输入文字","type":"widget::Label","contentX":0,"font":"微软雅黑","contentY":0},{"scale":1,"url":"images/content.png","frame":955,"type":"widget::Image","contentX":0,"contentY":0},{"scale":1,"frame":1402,"text":"请输入文字","type":"widget::Label","contentX":0,"font":"微软雅黑","contentY":0},{"scale":1,"url":"images/content.png","frame":1402,"type":"widget::Image","contentX":0,"contentY":0}];
+		
+		//			[{"scale":1,"url":"images/scene.jpg","contentX":0,"type":"widget::Image","frame":1,"contentY":0},{"scale":1,"url":"images/scene.jpg","contentX":0,"type":"widget::Image","frame":1,"contentY":0},{"scale":0.1,"url":"images/QQ123.png","contentX":0,"type":"widget::Image","frame":1,"contentY":0},{"scale":1,"url":"images/scene.jpg","contentX":0,"type":"widget::Image","frame":1,"contentY":0},{"scale":1,"contentX":0,"type":"widget::Label","text":"请输入文字","font":"微软雅黑","frame":955,"contentY":0},{"scale":1,"url":"images/scene.jpg","contentX":0,"type":"widget::Image","frame":955,"contentY":0},{"scale":1,"contentX":0,"type":"widget::Label","text":"请输入文字","font":"微软雅黑","frame":1402,"contentY":0},{"scale":1,"url":"images/scene.jpg","contentX":0,"type":"widget::Image","frame":1402,"contentY":0}];
 		private var framesConfig:Object;
 		public function Main()
 		{
@@ -105,9 +110,6 @@ package
 			this.movieContainer.y = this.componentHeight;
 			this.addChild(this.movieContainer);
 			
-			this.componentList = new Sprite();
-			this.addChild(this.componentList);
-			
 			this.toolContainer = new Sprite();
 			this.toolContainer.y = this.componentHeight + this.containerHeight;
 			this.addChild(this.toolContainer);
@@ -115,30 +117,35 @@ package
 		
 		private function initUI():void
 		{
+			this.componentList = new TList(new TListUI(ui.mc_list),null,TList.HORIZONTAL);
+//			buffList = new TList(new TListUI(ui),null,null,TList.HORIZONTAL);
+			componentList.setCellType(WidgetItem);
+			componentList.setCellWidth(31);
+			this.addChild(this.componentList);
 			for (var i:int = 0; i < this.mapConfig.length; i++) 
 			{
 				var obj:Object = this.mapConfig[i];
 				var btn:TSprite = new TSprite();
-//				btn.label = obj.type + i;
+				//				btn.label = obj.type + i;
 				btn.addEventListener(MouseEvent.CLICK, this.onComponentClick);
 				btn.x = 80 * i;
-//				btn.putClientProperty(obj);
+				//				btn.putClientProperty(obj);
 				this.componentList.addChild(btn);
 			}
 			
-//			this.playBtn = new PlayButton();
-//			this.playBtn.addEventListener(Event.CHANGE, this.onTogglBbtnChange);
-//			this.playBtn.x = 10;
-//			//			this.playBtn.y = 410;
-//			this.playBtn.label = "播放";
-//			this.addToolChild(this.playBtn);
+			//			this.playBtn = new PlayButton();
+			//			this.playBtn.addEventListener(Event.CHANGE, this.onTogglBbtnChange);
+			//			this.playBtn.x = 10;
+			//			//			this.playBtn.y = 410;
+			//			this.playBtn.label = "播放";
+			//			this.addToolChild(this.playBtn);
 			
-//			this.timeStampField = new TextField();
-//			this.timeStampField.autoSize = "left";
-//			this.timeStampField.textColor = 0xffffff;
-//			this.timeStampField.defaultTextFormat = new TextFormat(null, 30);
-//			//			this.timeStampField.y = 410;
-//			this.addToolChild(this.timeStampField);
+			//			this.timeStampField = new TextField();
+			//			this.timeStampField.autoSize = "left";
+			//			this.timeStampField.textColor = 0xffffff;
+			//			this.timeStampField.defaultTextFormat = new TextFormat(null, 30);
+			//			//			this.timeStampField.y = 410;
+			//			this.addToolChild(this.timeStampField);
 			
 			this.ui = new ThemeUI();
 			this.addChild(this.ui);
@@ -153,10 +160,10 @@ package
 		{
 			if(this.soundBtn.selected){
 				TweenLite.to(this.movieClipWrapper.movieClip, 1, {volume:0});
-//				this.movieClipWrapper.movieClip.soundTransform = new SoundTransform(0);
+				//				this.movieClipWrapper.movieClip.soundTransform = new SoundTransform(0);
 			}else{
 				TweenLite.to(this.movieClipWrapper.movieClip, 1, {volume:1});
-//				this.movieClipWrapper.movieClip.soundTransform = new SoundTransform(1);
+				//				this.movieClipWrapper.movieClip.soundTransform = new SoundTransform(1);
 			}
 		}
 		
@@ -168,12 +175,12 @@ package
 		
 		protected function onComponentClick(event:MouseEvent):void
 		{
-//			this.playBtn.toggled = false;
-//			var btn:Button = event.currentTarget as Button;
-//			var obj:Object = btn.getClientProperty();
-//			
-//			var movie:MovieClip = this.movieLoader.content as MovieClip;
-//			movie.gotoAndStop(obj.frame);
+			//			this.playBtn.toggled = false;
+			//			var btn:Button = event.currentTarget as Button;
+			//			var obj:Object = btn.getClientProperty();
+			//			
+			//			var movie:MovieClip = this.movieLoader.content as MovieClip;
+			//			movie.gotoAndStop(obj.frame);
 		}
 		
 		private function addToolChild(child:DisplayObject):void
@@ -215,7 +222,7 @@ package
 			if(currentFrame != lastFrame){
 				lastFrame = currentFrame;
 				this.ui.tf_timeStamp.text = formatString("{0}/{1}", toTimeString(this.movieClipWrapper.currentTime), toTimeString(this.movieClipWrapper.totalTime));
-//				this.ui.tf_timeStamp.x = this.containerWidth - this.toolPadding - this.timeStampField.width;
+				//				this.ui.tf_timeStamp.x = this.containerWidth - this.toolPadding - this.timeStampField.width;
 				
 				if(framesConfig[currentFrame]){
 					loop(this.movieClipWrapper.movieClip, framesConfig[currentFrame].concat())
@@ -228,22 +235,9 @@ package
 				if(!mComponentMap[node]){
 					mComponentMap[node] = true;
 					
-					var props:Object = widgets.shift();
-					if(props){
-						(node as IWidget).contentX = props.contentX;
-						(node as IWidget).contentY = props.contentY;
-						(node as IWidget).scale = props.scale;
-						
-						if(node is IImage)
-						{
-							if((node as IImage).url != props.url){
-								trace(node);
-							}
-							(node as IImage).url = props.url;
-						}else if(node is ILabel){
-							(node as ILabel).text = props.text;
-							(node as ILabel).font = props.font;
-						}
+					var config:Object = widgets.shift();
+					if(config){
+						(node as IWidget).fromConfig(config);
 					}
 				}
 			}else if(node is DisplayObjectContainer){
