@@ -5,6 +5,7 @@
 	import flash.display.MovieClip;
 	import flash.events.Event;
 	import flash.utils.Dictionary;
+	import flash.utils.getQualifiedClassName;
 	
 	import widget.interfaces.IWidget;
 	
@@ -48,6 +49,8 @@
 					mComponentMap[node] = true;
 					
 					var config:Object = (node as IWidget).toConfig();//{frame:this.currentFrame, type:getQualifiedClassName(node)};
+					config.frame = this.currentFrame;
+					config.type = getQualifiedClassName(node);
 					this.widgets.push(config);
 				}
 			}else if(node is DisplayObjectContainer){

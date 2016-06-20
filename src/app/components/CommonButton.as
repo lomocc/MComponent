@@ -55,7 +55,7 @@ package app.components
 			super.initView();
 			
 			_onUp = _ui["mc_onUp"];
-			_onOver = _ui["mc_onOver"];
+			if(_ui.hasOwnProperty("mc_onOver")) _onOver = _ui["mc_onOver"];
 			if(_ui.hasOwnProperty("mc_onSelected")) _onSelected = _ui["mc_onSelected"];
 			if(_ui.hasOwnProperty("mc_onLocked")) _onLocked = _ui["mc_onLocked"];
 			if(_ui.hasOwnProperty("mc_onLockedReserve")) _onLockedReserve = _ui["mc_onLockedReserve"];
@@ -244,7 +244,7 @@ package app.components
 		{
 			if(label == "") return;
 			if(_onUp.hasOwnProperty(TF_LABEL)) _onUp[TF_LABEL].text = label;
-			if(_onOver.hasOwnProperty(TF_LABEL)) _onOver[TF_LABEL].text = label;
+			if(_onOver && _onOver.hasOwnProperty(TF_LABEL)) _onOver[TF_LABEL].text = label;
 			if(_onSelected && _onSelected.hasOwnProperty(TF_LABEL)) _onSelected[TF_LABEL].text = label;
 			if(_onLocked && _onLocked.hasOwnProperty(TF_LABEL)) _onLocked[TF_LABEL].text = label;
 			if(_onLockedReserve && _onLockedReserve.hasOwnProperty(TF_LABEL)) _onLockedReserve[TF_LABEL].text = label;
@@ -255,7 +255,7 @@ package app.components
 		{
 			if(!_onUp || !_onOver) return;
 //			TweenLite.to(_onUp, DURATION_SHOW, {autoAlpha:0});
-			TweenLite.to(_onOver, DURATION_SHOW, {autoAlpha:0});
+			_onOver && TweenLite.to(_onOver, DURATION_SHOW, {autoAlpha:0});
 			if(_onSelected) TweenLite.to(_onSelected, DURATION_SHOW, {autoAlpha:0});
 			if(_onLocked) TweenLite.to(_onLocked, DURATION_SHOW, {autoAlpha:0});
 			if(_onLockedReserve) TweenLite.to(_onLockedReserve, DURATION_SHOW, {autoAlpha:0});
@@ -263,7 +263,7 @@ package app.components
 			switch(status)
 			{
 				case HIGH_LIGHT :
-					TweenLite.to(_onOver, DURATION_SHOW, {autoAlpha:1});
+					_onOver && TweenLite.to(_onOver, DURATION_SHOW, {autoAlpha:1});
 					break;
 				
 				case SELECTED :

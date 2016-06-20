@@ -1,6 +1,5 @@
 ﻿package widget
 {
-	import flash.display.DisplayObject;
 	import flash.display.Loader;
 	import flash.net.URLRequest;
 	

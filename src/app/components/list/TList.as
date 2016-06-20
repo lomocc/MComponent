@@ -46,44 +46,44 @@ package app.components.list
 	import app.utils.HashMap;
 	import app.utils.MathUtil;
 	
-	[Event(name="ITEM_SELECTED", type="com.throne.gui.events.ListEvent")]
+	[Event(name="ITEM_SELECTED", type="app.events.ListEvent")]
 	
 	
 	/**
 	 * Dispatched when the list item be click.
 	 * @eventType com.throne.events.ListItemEvent.ITEM_CLICK
 	 */
-	[Event(name="itemClick", type="com.throne.gui.events.ListItemEvent")]
+	[Event(name="itemClick", type="app.events.ListItemEvent")]
 	
 	/**
 	 * Dispatched when the list item be double click.
 	 * @eventType com.throne.events.ListItemEvent.ITEM_DOUBLE_CLICK
 	 */
-	[Event(name="itemDoubleClick", type="com.throne.gui.events.ListItemEvent")]
+	[Event(name="itemDoubleClick", type="app.events.ListItemEvent")]
 	
 	/**
 	 * Dispatched when the list item be mouse down.
 	 * @eventType com.throne.events.ListItemEvent.ITEM_MOUSE_DOWN
 	 */
-	[Event(name="itemMouseDown", type="com.throne.gui.events.ListItemEvent")]
+	[Event(name="itemMouseDown", type="app.events.ListItemEvent")]
 	
 	/**
 	 * Dispatched when the list item be roll over.
 	 * @eventType com.throne.events.ListItemEvent.ITEM_ROLL_OVER
 	 */
-	[Event(name="itemRollOver", type="com.throne.gui.events.ListItemEvent")]
+	[Event(name="itemRollOver", type="app.events.ListItemEvent")]
 	
 	/**
 	 * Dispatched when the list item be roll out.
 	 * @eventType com.throne.events.ListItemEvent.ITEM_ROLL_OUT
 	 */
-	[Event(name="itemRollOut", type="com.throne.gui.events.ListItemEvent")]
+	[Event(name="itemRollOut", type="app.events.ListItemEvent")]
 	
 	/**
 	 * Dispatched when the list item be released out side.
 	 * @eventType com.throne.events.ListItemEvent.ITEM_RELEASE_OUT_SIDE
 	 */
-	[Event(name="itemReleaseOutSide", type="com.throne.gui.events.ListItemEvent")]
+	[Event(name="itemReleaseOutSide", type="app.events.ListItemEvent")]
 	
 	
 	

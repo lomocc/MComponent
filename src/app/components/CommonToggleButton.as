@@ -58,9 +58,9 @@ package app.components
 		{
 			if(label == "") return;
 			if(_onUp.hasOwnProperty(TF_LABEL)) _onUp[TF_LABEL].text = label;
-			if(_onOver.hasOwnProperty(TF_LABEL)) _onOver[TF_LABEL].text = label;
+			if(_onOver && _onOver.hasOwnProperty(TF_LABEL)) _onOver[TF_LABEL].text = label;
 			if(_onUpSelect.hasOwnProperty(TF_LABEL)) _onUpSelect[TF_LABEL].text = label;
-			if(_onOverSelect.hasOwnProperty(TF_LABEL)) _onOverSelect[TF_LABEL].text = label;
+			if(_onOverSelect && _onOverSelect.hasOwnProperty(TF_LABEL)) _onOverSelect[TF_LABEL].text = label;
 		}
 		
 		override protected function updateState(event:MouseEvent=null):void
@@ -72,10 +72,10 @@ package app.components
 			var overSelectAlpha:Boolean = _selected && _over;
 			
 			TweenLite.to(_onUp, DURATION_SHOW, {autoAlpha:upAlpha?1:0});
-			TweenLite.to(_onOver, DURATION_SHOW, {autoAlpha:overAlpha?1:0});
+			_onOver && TweenLite.to(_onOver, DURATION_SHOW, {autoAlpha:overAlpha?1:0});
 			
 			TweenLite.to(_onUpSelect, DURATION_SHOW, {autoAlpha:upSelectAlpha?1:0});
-			TweenLite.to(_onOverSelect, DURATION_SHOW, {autoAlpha:overSelectAlpha?1:0});
+			_onOverSelect && TweenLite.to(_onOverSelect, DURATION_SHOW, {autoAlpha:overSelectAlpha?1:0});
 			
 //			if(_over){
 //				overAlpha = 1;
@@ -98,10 +98,10 @@ package app.components
 			var normalAlpha:Number = selected?0:1;
 			var selectAlpha:Number = selected?1:0;
 			
-			TweenLite.to(_onOver, DURATION_SHOW, {autoAlpha:normalAlpha});
+			_onOver && TweenLite.to(_onOver, DURATION_SHOW, {autoAlpha:normalAlpha});
 			TweenLite.to(_onUp, DURATION_SHOW, {autoAlpha:normalAlpha});
 			
-			TweenLite.to(_onOverSelect, DURATION_SHOW, {autoAlpha:selectAlpha});
+			_onOverSelect && TweenLite.to(_onOverSelect, DURATION_SHOW, {autoAlpha:selectAlpha});
 			TweenLite.to(_onUpSelect, DURATION_SHOW, {autoAlpha:selectAlpha});
 			
 			_onOver.visible = _onUp.visible = true;
@@ -110,20 +110,23 @@ package app.components
 		
 		private function onSelected():void
 		{
-			_onOver.visible = _onUp.visible = false;
-			_onOverSelect.visible = _onUpSelect.visible = true;
+			_onUp.visible = false;
+			_onOverSelect.visible = false;
+			
+			if(_onOver)_onOver.visible = false;
+			if(_onOverSelect)_onOverSelect.visible = true;
 		}
 		
 		protected function onOut():void
 		{
-			TweenLite.to(_onOver, DURATION_SHOW, {autoAlpha:0});
-			TweenLite.to(_onOverSelect, DURATION_SHOW, {autoAlpha:0});
+			_onOver && TweenLite.to(_onOver, DURATION_SHOW, {autoAlpha:0});
+			_onOverSelect && TweenLite.to(_onOverSelect, DURATION_SHOW, {autoAlpha:0});
 		}
 		
 		protected function onOver():void
 		{
-			TweenLite.to(_onOver, DURATION_SHOW, {autoAlpha:1});
-			TweenLite.to(_onOverSelect, DURATION_SHOW, {autoAlpha:1});
+			_onOver && TweenLite.to(_onOver, DURATION_SHOW, {autoAlpha:1});
+			_onOverSelect &&TweenLite.to(_onOverSelect, DURATION_SHOW, {autoAlpha:1});
 		}
 		
 		

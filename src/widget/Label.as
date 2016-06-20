@@ -75,8 +75,8 @@
 			//				var url:String = this.serverURL;//formatString("{0}?text={1}&font={2}", this.serverURL, this.text, this.font);
 			//				this.loader.load(new URLRequest(url));
 			//				this.loader.mask = this._mask;
-			
-			this._tf.text = this.text;
+			trace("this.text",this.text);
+			this._tf.text = this.text || "";
 			var textFormat:TextFormat = new TextFormat(this.font, this.fontSize, this.textColor);
 			this._tf.setTextFormat(textFormat);
 			//				var url:String = 'images/myboldfont.swf';

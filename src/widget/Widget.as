@@ -23,7 +23,7 @@ package widget
 			//			startHeight = this.height/this.scaleY;
 			
 			if (numChildren > 0) {
-				removeChildAt(0);
+				super.removeChildAt(0);
 			}
 			
 			this.createChildren();
@@ -73,7 +73,7 @@ package widget
 			this.invalidate();
 		}
 		private var _contentScale:Number = 1;
-		[Inspectable(type="Number", defaultValue="1", name="scale（缩放）")]
+		[Inspectable(type="Number", defaultValue="1", name="scale（内容缩放）")]
 		public function get contentScale():Number {
 			return this._contentScale;
 		}

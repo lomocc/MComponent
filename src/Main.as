@@ -1,6 +1,8 @@
 package
 {
 	import com.greensock.TweenLite;
+	import com.greensock.events.LoaderEvent;
+	import com.greensock.loading.DataLoader;
 	import com.greensock.plugins.AutoAlphaPlugin;
 	import com.greensock.plugins.TweenPlugin;
 	import com.greensock.plugins.VolumePlugin;
@@ -13,7 +15,6 @@ package
 	import flash.display.MovieClip;
 	import flash.display.Sprite;
 	import flash.events.Event;
-	import flash.events.MouseEvent;
 	import flash.net.URLRequest;
 	import flash.utils.Dictionary;
 	
@@ -21,23 +22,24 @@ package
 	import app.components.TListUI;
 	import app.components.TSlider;
 	import app.components.TSliderUI;
-	import app.components.TSprite;
 	import app.components.list.TList;
+	import app.events.ListItemEvent;
 	import app.utils.DisplayUtil;
 	import app.utils.MovieClipWrapper;
+	import app.utils.ScriptUtil;
 	import app.views.WidgetItem;
 	
 	import assets.ThemeUI;
 	
+	import widget.Image;
+	import widget.Label;
 	import widget.interfaces.IWidget;
 	
 	public class Main extends Sprite
 	{
 		TweenPlugin.activate([VolumePlugin, AutoAlphaPlugin]);
 		
-		public var ui:ThemeUI = new ThemeUI();
-		
-		public var frameRate:uint = 24;
+		ScriptUtil.importClass(Image, Label);
 		
 		public var containerWidth:uint = 800;
 		public var containerHeight:uint = 500;
@@ -49,11 +51,13 @@ package
 		
 		public var toolPadding:uint = 10;
 		
+		private var ui:ThemeUI;
+		
 		private var componentList:TList;
 		
 		private var playBtn:CommonToggleButton;
 		private var soundBtn:CommonToggleButton;
-		public var progressSlider:TSlider;
+		private var progressSlider:TSlider;
 		//		private var timeStampField:TextField;
 		
 		private var movieContainer:Sprite;
@@ -64,14 +68,10 @@ package
 		
 		private var mComponentMap:Dictionary = new Dictionary();
 		
-		private var mapConfig:Array = [
-			{"contentX":0,"scale":1,"url":"images/scene.jpg","contentY":0,"type":"widget::Image","frame":1},
-			{"contentX":0,"scale":1,"contentY":0,"text":"请输入文字","font":"微软雅黑","frame":1,"type":"widget::Label"}];
+		private var movieConfig:Array;
 		
-		//			[{"scale":1,"url":"images/content.png","frame":1,"type":"widget::Image","contentX":0,"contentY":0},{"scale":1,"url":"images/content.png","frame":1,"type":"widget::Image","contentX":0,"contentY":0},{"scale":0.1,"url":"images/QQ123.png","frame":1,"type":"widget::Image","contentX":0,"contentY":0},{"scale":1,"url":"images/content.png","frame":1,"type":"widget::Image","contentX":0,"contentY":0},{"scale":1,"frame":955,"text":"请输入文字","type":"widget::Label","contentX":0,"font":"微软雅黑","contentY":0},{"scale":1,"url":"images/content.png","frame":955,"type":"widget::Image","contentX":0,"contentY":0},{"scale":1,"frame":1402,"text":"请输入文字","type":"widget::Label","contentX":0,"font":"微软雅黑","contentY":0},{"scale":1,"url":"images/content.png","frame":1402,"type":"widget::Image","contentX":0,"contentY":0}];
-		
-		//			[{"scale":1,"url":"images/scene.jpg","contentX":0,"type":"widget::Image","frame":1,"contentY":0},{"scale":1,"url":"images/scene.jpg","contentX":0,"type":"widget::Image","frame":1,"contentY":0},{"scale":0.1,"url":"images/QQ123.png","contentX":0,"type":"widget::Image","frame":1,"contentY":0},{"scale":1,"url":"images/scene.jpg","contentX":0,"type":"widget::Image","frame":1,"contentY":0},{"scale":1,"contentX":0,"type":"widget::Label","text":"请输入文字","font":"微软雅黑","frame":955,"contentY":0},{"scale":1,"url":"images/scene.jpg","contentX":0,"type":"widget::Image","frame":955,"contentY":0},{"scale":1,"contentX":0,"type":"widget::Label","text":"请输入文字","font":"微软雅黑","frame":1402,"contentY":0},{"scale":1,"url":"images/scene.jpg","contentX":0,"type":"widget::Image","frame":1402,"contentY":0}];
 		private var framesConfig:Object;
+		
 		public function Main()
 		{
 			this.addEventListener(Event.ADDED_TO_STAGE, this.addedToStage);
@@ -80,18 +80,38 @@ package
 		protected function addedToStage(event:Event):void
 		{
 			DisplayUtil.initStage(stage);
-			stage.frameRate = frameRate;
+			
+			loadConfig();
+			
+		}
+		private function loadConfig():void
+		{
+			new DataLoader("fla/Template-61.json", {onComplete:configLoadCompleteHandler, autoDispose:true}).load();
+		}
+		private function configLoadCompleteHandler(event:LoaderEvent):void
+		{
+			var templateConfig:Object = JSON.parse(event.target.content);
+			var mivieURL:String = templateConfig.url;
+			this.movieConfig = templateConfig.config;
+			
 			initFrames();
 			initContainer();
 			initUI();
-			initMovie();
+			
+			this.movieLoader = new Loader();
+			this.movieLoader.x = this.containerWidth - this.movieWidth >> 1;
+			this.movieLoader.y = this.containerHeight - this.movieHeight >> 1;
+			this.movieLoader.contentLoaderInfo.addEventListener(Event.INIT, this.onMovieLoadInit);
+			this.movieLoader.load(new URLRequest(mivieURL));
+			this.addMovieChild(this.movieLoader);
 		}
+		
 		private function initFrames():void
 		{
 			framesConfig = {};
-			for (var i:int = 0, l:int = mapConfig.length; i < l; i++) 
+			for (var i:int = 0, l:int = movieConfig.length; i < l; i++) 
 			{
-				var props:* = mapConfig[i];
+				var props:* = movieConfig[i];
 				if(!framesConfig[props.frame]){
 					framesConfig[props.frame] = [props];
 				}else{
@@ -117,44 +137,35 @@ package
 		
 		private function initUI():void
 		{
-			this.componentList = new TList(new TListUI(ui.mc_list),null,TList.HORIZONTAL);
-//			buffList = new TList(new TListUI(ui),null,null,TList.HORIZONTAL);
-			componentList.setCellType(WidgetItem);
-			componentList.setCellWidth(31);
-			this.addChild(this.componentList);
-			for (var i:int = 0; i < this.mapConfig.length; i++) 
-			{
-				var obj:Object = this.mapConfig[i];
-				var btn:TSprite = new TSprite();
-				//				btn.label = obj.type + i;
-				btn.addEventListener(MouseEvent.CLICK, this.onComponentClick);
-				btn.x = 80 * i;
-				//				btn.putClientProperty(obj);
-				this.componentList.addChild(btn);
-			}
-			
-			//			this.playBtn = new PlayButton();
-			//			this.playBtn.addEventListener(Event.CHANGE, this.onTogglBbtnChange);
-			//			this.playBtn.x = 10;
-			//			//			this.playBtn.y = 410;
-			//			this.playBtn.label = "播放";
-			//			this.addToolChild(this.playBtn);
-			
-			//			this.timeStampField = new TextField();
-			//			this.timeStampField.autoSize = "left";
-			//			this.timeStampField.textColor = 0xffffff;
-			//			this.timeStampField.defaultTextFormat = new TextFormat(null, 30);
-			//			//			this.timeStampField.y = 410;
-			//			this.addToolChild(this.timeStampField);
-			
 			this.ui = new ThemeUI();
 			this.addChild(this.ui);
+			
+			this.componentList = new TList(new TListUI(ui.mc_list),null,TList.HORIZONTAL);
+			
+			componentList.addEventListener(ListItemEvent.ITEM_CLICK, this.onWidgetSelect);
+			componentList.setCellType(WidgetItem);
+			componentList.setCellWidth(200);
+//			componentList.setCellHeight(200);
+			
+			componentList.items = movieConfig;
 			this.soundBtn = new CommonToggleButton(this.ui.btn_sound, "", onTogglSoundChange);
 			this.playBtn = new CommonToggleButton(this.ui.btn_play, "", this.onTogglBtnChange);
 			
 			progressSlider = new TSlider(new TSliderUI(this.ui.mc_progress), TSlider.HORIZONTAL, onProgressSliderChange);
 			progressSlider.maximum = 1;
 			progressSlider.minimum = 0;
+		}
+		
+		protected function onWidgetSelect(event:ListItemEvent):void
+		{
+			var frame:int = event.getValue().frame;
+			componentList.selectedCell = event.getCell();
+			if(frame != this.movieClipWrapper.movieClip.currentFrame){
+				trace(123,JSON.stringify(event.getValue()));
+				this.playBtn.selected = false;
+				
+				this.movieClipWrapper.movieClip.gotoAndStop(frame);
+			}
 		}
 		private function onTogglSoundChange():void
 		{
@@ -171,18 +182,7 @@ package
 		{
 			this.movieClipWrapper.progress = progressSlider.value;
 			this.playBtn.selected = false;
-		}
-		
-		protected function onComponentClick(event:MouseEvent):void
-		{
-			//			this.playBtn.toggled = false;
-			//			var btn:Button = event.currentTarget as Button;
-			//			var obj:Object = btn.getClientProperty();
-			//			
-			//			var movie:MovieClip = this.movieLoader.content as MovieClip;
-			//			movie.gotoAndStop(obj.frame);
-		}
-		
+		}		
 		private function addToolChild(child:DisplayObject):void
 		{
 			this.toolContainer.addChild(child);
@@ -192,16 +192,6 @@ package
 			if(this.movieContainer.numChildren > 0)
 				this.movieContainer.removeChildren();
 			this.movieContainer.addChild(child);
-		}
-		private function initMovie():void
-		{
-			var mivieURL:String = "./fla/Template-61.swf";
-			this.movieLoader = new Loader();
-			this.movieLoader.x = this.containerWidth - this.movieWidth >> 1;
-			this.movieLoader.y = this.containerHeight - this.movieHeight >> 1;
-			this.movieLoader.contentLoaderInfo.addEventListener(Event.INIT, this.onMovieLoadInit);
-			this.movieLoader.load(new URLRequest(mivieURL));
-			this.addMovieChild(this.movieLoader);
 		}
 		
 		protected function onMovieLoadInit(event:Event):void
@@ -274,12 +264,5 @@ package
 				movie.stop();
 			}
 		}
-		
-		protected function onBtnClick(event:MouseEvent):void
-		{
-			trace("click");
-			
-		}
-		
 	}
 }
