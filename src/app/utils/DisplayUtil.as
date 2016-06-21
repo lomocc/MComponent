@@ -94,6 +94,13 @@ package app.utils
 			sp.graphics.endFill();
 			return sp;
 		}
-
+		public static function replace(old:DisplayObject, target:DisplayObject):void
+		{
+			var parent:DisplayObjectContainer = old.parent;
+			var index:int = parent.getChildIndex(old);
+			parent.removeChild(old);
+			parent.addChildAt(target, index);
+			
+		}
 	}
 }

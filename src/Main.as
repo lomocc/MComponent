@@ -9,10 +9,10 @@ package
 	
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
-	import flash.display.Graphics;
 	import flash.display.Loader;
 	import flash.display.LoaderInfo;
 	import flash.display.MovieClip;
+	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.net.URLRequest;
@@ -41,16 +41,6 @@ package
 		
 		ScriptUtil.importClass(Image, Label);
 		
-		public var containerWidth:uint = 800;
-		public var containerHeight:uint = 500;
-		
-		public var componentHeight:uint = 50;
-		
-		public var movieWidth:uint = 550;
-		public var movieHeight:uint = 400;
-		
-		public var toolPadding:uint = 10;
-		
 		private var ui:ThemeUI;
 		
 		private var componentList:TList;
@@ -58,17 +48,14 @@ package
 		private var playBtn:CommonToggleButton;
 		private var soundBtn:CommonToggleButton;
 		private var progressSlider:TSlider;
-		//		private var timeStampField:TextField;
-		
-		private var movieContainer:Sprite;
-		private var toolContainer:Sprite;
 		
 		private var movieLoader:Loader;
+		private var movieMask:Shape;
 		private var movieClipWrapper:MovieClipWrapper;
 		
 		private var mComponentMap:Dictionary = new Dictionary();
 		
-		private var movieConfig:Array;
+		private var movieConfig:Object;
 		
 		private var framesConfig:Object;
 		
@@ -90,49 +77,45 @@ package
 		}
 		private function configLoadCompleteHandler(event:LoaderEvent):void
 		{
-			var templateConfig:Object = JSON.parse(event.target.content);
-			var mivieURL:String = templateConfig.url;
-			this.movieConfig = templateConfig.config;
+			this.movieConfig = JSON.parse(event.target.content);
+			var mivieURL:String = movieConfig.url;
 			
 			initFrames();
-			initContainer();
 			initUI();
 			
+			var movieX:Number = (ui.mc_movie.width - this.movieConfig.config.width)/2 + ui.mc_movie.x;
+			var movieY:Number = (ui.mc_movie.height - this.movieConfig.config.height)/2 + ui.mc_movie.y;
+			
+			movieMask = new Shape();
+			movieMask.graphics.beginFill(0, 0);
+			movieMask.graphics.drawRect(movieX, movieY,  this.movieConfig.config.width, this.movieConfig.config.height);
+			movieMask.graphics.endFill();
+			this.addChild(movieMask);
+			
 			this.movieLoader = new Loader();
-			this.movieLoader.x = this.containerWidth - this.movieWidth >> 1;
-			this.movieLoader.y = this.containerHeight - this.movieHeight >> 1;
+			
+			this.movieLoader.x = movieX;
+			this.movieLoader.y = movieY;
+			
+			DisplayUtil.replace(ui.mc_movie, this.movieLoader);
+			this.movieLoader.mask = movieMask;
+			
 			this.movieLoader.contentLoaderInfo.addEventListener(Event.INIT, this.onMovieLoadInit);
 			this.movieLoader.load(new URLRequest(mivieURL));
-			this.addMovieChild(this.movieLoader);
 		}
 		
 		private function initFrames():void
 		{
 			framesConfig = {};
-			for (var i:int = 0, l:int = movieConfig.length; i < l; i++) 
+			for (var i:int = 0, l:int = movieConfig.config.frames.length; i < l; i++) 
 			{
-				var props:* = movieConfig[i];
+				var props:* = movieConfig.config.frames[i];
 				if(!framesConfig[props.frame]){
 					framesConfig[props.frame] = [props];
 				}else{
 					framesConfig[props.frame].push(props);
 				}
 			}		
-		}
-		private function initContainer():void
-		{	
-			var g:Graphics = this.graphics;
-			g.beginFill(0x313131);
-			g.drawRect(0, 0, stage.stageWidth, stage.stageHeight);
-			g.endFill();
-			
-			this.movieContainer = new Sprite();
-			this.movieContainer.y = this.componentHeight;
-			this.addChild(this.movieContainer);
-			
-			this.toolContainer = new Sprite();
-			this.toolContainer.y = this.componentHeight + this.containerHeight;
-			this.addChild(this.toolContainer);
 		}
 		
 		private function initUI():void
@@ -145,9 +128,9 @@ package
 			componentList.addEventListener(ListItemEvent.ITEM_CLICK, this.onWidgetSelect);
 			componentList.setCellType(WidgetItem);
 			componentList.setCellWidth(200);
-//			componentList.setCellHeight(200);
+			componentList.setCellHeight(200);
 			
-			componentList.items = movieConfig;
+			componentList.items = movieConfig.config.frames;
 			this.soundBtn = new CommonToggleButton(this.ui.btn_sound, "", onTogglSoundChange);
 			this.playBtn = new CommonToggleButton(this.ui.btn_play, "", this.onTogglBtnChange);
 			
@@ -161,7 +144,6 @@ package
 			var frame:int = event.getValue().frame;
 			componentList.selectedCell = event.getCell();
 			if(frame != this.movieClipWrapper.movieClip.currentFrame){
-				trace(123,JSON.stringify(event.getValue()));
 				this.playBtn.selected = false;
 				
 				this.movieClipWrapper.movieClip.gotoAndStop(frame);
@@ -182,16 +164,6 @@ package
 		{
 			this.movieClipWrapper.progress = progressSlider.value;
 			this.playBtn.selected = false;
-		}		
-		private function addToolChild(child:DisplayObject):void
-		{
-			this.toolContainer.addChild(child);
-		}
-		private function addMovieChild(child:DisplayObject):void
-		{
-			if(this.movieContainer.numChildren > 0)
-				this.movieContainer.removeChildren();
-			this.movieContainer.addChild(child);
 		}
 		
 		protected function onMovieLoadInit(event:Event):void
