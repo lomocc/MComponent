@@ -22,11 +22,14 @@ package
 	import app.components.TListUI;
 	import app.components.TSlider;
 	import app.components.TSliderUI;
+	import app.components.TSprite;
 	import app.components.list.TList;
 	import app.events.ListItemEvent;
 	import app.utils.DisplayUtil;
 	import app.utils.MovieClipWrapper;
 	import app.utils.ScriptUtil;
+	import app.views.ImageEditor;
+	import app.views.LabelEditor;
 	import app.views.WidgetItem;
 	
 	import assets.ThemeUI;
@@ -52,6 +55,8 @@ package
 		private var movieLoader:Loader;
 		private var movieMask:Shape;
 		private var movieClipWrapper:MovieClipWrapper;
+		
+		private var editorContainer:TSprite;
 		
 		private var mComponentMap:Dictionary = new Dictionary();
 		
@@ -147,16 +152,26 @@ package
 			progressSlider = new TSlider(new TSliderUI(this.ui.mc_progress), TSlider.HORIZONTAL, onProgressSliderChange);
 			progressSlider.maximum = 1;
 			progressSlider.minimum = 0;
+			
+			this.editorContainer = new TSprite(ui.mc_editor);
 		}
 		
 		protected function onWidgetSelect(event:ListItemEvent):void
 		{
-			var frame:int = event.getValue().frame;
+			var frameObj:Object = event.getValue();
+			var frame:int = frameObj.frame;
 			componentList.selectedCell = event.getCell();
 			if(frame != this.movieClipWrapper.movieClip.currentFrame){
 				this.playBtn.selected = false;
 				
 				this.movieClipWrapper.movieClip.gotoAndStop(frame);
+			}
+			if(frameObj.type == "widget::Image"){
+				this.editorContainer.removeChildren();
+				this.editorContainer.addChild(new ImageEditor);
+			}else if(frameObj.type == "widget::Label"){
+				this.editorContainer.removeChildren();
+				this.editorContainer.addChild(new LabelEditor);
 			}
 		}
 		private function onTogglSoundChange():void
