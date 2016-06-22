@@ -83,12 +83,20 @@ package
 			initFrames();
 			initUI();
 			
-			var movieX:Number = (ui.mc_movie.width - this.movieConfig.config.width)/2 + ui.mc_movie.x;
-			var movieY:Number = (ui.mc_movie.height - this.movieConfig.config.height)/2 + ui.mc_movie.y;
+			var movieMaxWidth:Number = ui.mc_movie.width;
+			var movieMaxHeight:Number = ui.mc_movie.height;
+			
+			var movieScale:Number = Math.min(ui.mc_movie.width/this.movieConfig.config.width, ui.mc_movie.height/this.movieConfig.config.height);
+			
+			var movieWidth:Number = movieScale * this.movieConfig.config.width;
+			var movieHeight:Number = movieScale * this.movieConfig.config.height;
+			
+			var movieX:Number = (ui.mc_movie.width - movieWidth)/2 + ui.mc_movie.x;
+			var movieY:Number = (ui.mc_movie.height - movieHeight)/2 + ui.mc_movie.y;
 			
 			movieMask = new Shape();
 			movieMask.graphics.beginFill(0, 0);
-			movieMask.graphics.drawRect(movieX, movieY,  this.movieConfig.config.width, this.movieConfig.config.height);
+			movieMask.graphics.drawRect(movieX, movieY,  movieWidth, movieHeight);
 			movieMask.graphics.endFill();
 			this.addChild(movieMask);
 			
@@ -96,6 +104,8 @@ package
 			
 			this.movieLoader.x = movieX;
 			this.movieLoader.y = movieY;
+			this.movieLoader.scaleX = movieScale;
+			this.movieLoader.scaleY = movieScale;
 			
 			DisplayUtil.replace(ui.mc_movie, this.movieLoader);
 			this.movieLoader.mask = movieMask;

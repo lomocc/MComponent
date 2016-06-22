@@ -10,7 +10,7 @@ package
 	import flash.system.ApplicationDomain;
 	import flash.system.LoaderContext;
 	
-	[SWF(width="1200", height="800", frameRate="24")]
+	[SWF(width="1280", height="720", frameRate="24")]
 	public class Preloader extends Sprite
 	{
 		public function Preloader()
